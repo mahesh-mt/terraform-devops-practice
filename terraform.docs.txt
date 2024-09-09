@@ -1,0 +1,132 @@
+how to install terraform download windows amd 64
+
+extract
+copy terraform file to new dir devops_binaries and paste inside it
+
+delete other file
+
+copy path for terraform 
+
+searchenvironment variables -> systemvariable -> select path -> edit ->new_> paste our path here C:\devops_binaries ->save one
+
+now in mobaxterm sarch terraform --version and it will show
+
+
+Now go to IAM create user with administration permission and create secret access key for it and download
+
+
+- launch EC@ from vsCode with awsCLI
+install aws cli for windows
+set path for it in environment variable and restart system fir not showing aws --version
+
+
+now go to VS code 
+
+create main.tf terraform file
+
+awscli configure -> enter ID secret key ->default region and enter
+
+resource "aws_instance" "terraform_ec2" {
+  ami           = "ami-0e53db6fd757e38c7" # us-west-2
+  instance_type = "t2.micro"
+  key_name = "key"
+  subnet_id     = "subnet-0001038c62425190d"
+  vpc_security_group_ids = ["sg-0e8e3606f4f665eb1"]
+  associate_public_ip_address = true
+}
+
+everytime 1st command is   -> terraform init
+
+- terraform plan
+
+- terraform apply    -yes
+
+- terraform destroy to terminate instance
+
+
+if we made changes manually then after whenever we make terraform plan and apply then manual changes will be removed terraform goes to desired state
+
+major, minor, patch version
+if vrsion is 5.61.0 then 5->major, 62-> minor and 0 is patch version
+
+terraform refresh
+
+terraform fmt  -> to make code redable
+
+before   ->  resource "aws_instance" "terraform_ec2" {
+  ami           = "ami-0e53db6fd757e38c7" # us-west-2
+  instance_type = "t2.micro"
+  key_name = "key"
+  subnet_id     = "subnet-0001038c62425190d"
+  vpc_security_group_ids = ["sg-0e8e3606f4f665eb1"]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "terraform_ec2"
+  }
+}
+
+AFTER
+
+resource "aws_instance" "terraform_ec2" {
+  ami                         = "ami-0e53db6fd757e38c7" # us-west-2
+  instance_type               = "t2.micro"
+  key_name                    = "key"
+  subnet_id                   = "subnet-0001038c62425190d"
+  vpc_security_group_ids      = ["sg-0e8e3606f4f665eb1"]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "terraform_ec2"
+  }
+}
+
+
+- terraform validate  -> to chech code is valid or not what changes need to be done
+
+terraform output to give us required outputs  ->
+1. public IP
+output "ec2_pub_ip" {
+  value = aws_instance.terraform_ec2.public_ip
+}
+
+Instance ID
+output "ec2_id" {
+  value = aws_instance.terraform_ec2.id
+}
+
+private IP
+output "ec2_private_ip" {
+  value = aws_instance.terraform_ec2.private_ip
+}
+
+
+TERRAFORM Variable -> 
+
+
+
+to destroy specific Instance we can use ->
+- terraform destroy -target aws_instance.terraform_ec2(resourceName.IstanceName)
+
+
+terraform Backup file is similar file like terraform.tfstate file as a backup for that file 
+
+to save terraform plan output we can use 
+- terraform plan -out=tfplan.out
+this file is not redable to make this file in redable format
+- terraform show -json tfplan.out
+
+terraform backend
+
+to store file in s3 bucket we can us terraform backend
+# terraform {
+#   backend "s3" {
+#     bucket = "terraform-tf-state-bac"
+#     key    = "terraform-state/filename"  #file will be stored in folder
+#     region = "ap-south-1"
+#   }
+# }
+
+after running this code in provider before plan we need to initialize terraform once again
+terraform init
+then you can plan and apply 

@@ -1,0 +1,6 @@
+# terraform related files we want to ignore
+
+.terraform*
+terraform.tfstate
+terraform.tfstate.backup
+tfplan.out
